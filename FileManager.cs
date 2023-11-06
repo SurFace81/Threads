@@ -9,22 +9,19 @@ namespace Threads
     internal class FileManager
     {
         StreamWriter? _writer;
+        private string _path;
 
-        public void writeLineInFile(string path, string data, bool shouldAdd = false)
+        public FileManager(string path)
         {
-            _writer = new StreamWriter(path, shouldAdd);    // If shouldAdd = true, we add a line to the file
+            _path = path;
+        }
+
+        public void writeLineInFile(string data, bool shouldAdd = false)
+        {
+            _writer = new StreamWriter(_path, shouldAdd);    // If shouldAdd = true, we add a line to the file
             _writer.WriteLine(data);
             _writer.Close();
             _writer.Dispose();
-        }
-
-        public void deleteFile(string path)
-        {
-            FileInfo file = new FileInfo(path);
-            if (file.Exists)
-            {
-                file.Delete();
-            }
         }
     }
 }
