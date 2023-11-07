@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Timers;
 using Threads;
 
 public class Demo
@@ -28,11 +29,12 @@ public class Demo
         // Ex. "hello".PadRight(10) = "hello     "
         fileManager.writeLineInFile("".PadRight(23) + "threads".PadRight(23) + "function".PadRight(23));
 
-        const int STEPS = 400;
-        Thread[] threads = new Thread[STEPS];
-        double[] results = new double[STEPS];  // result of each thread
+        const int STEPS = 40;
 
         timer.Start();  // measure time
+
+        Task[] threads = new Task[STEPS];
+        double[] results = new double[STEPS];  // result of each thread
 
         double arg = -Math.PI / 5;      // [-pi/5; 9*pi/5]
         while (arg <= 9 * Math.PI / 5)
@@ -40,7 +42,7 @@ public class Demo
             for (int i = 0; i < STEPS; i++)
             {
                 int index = i;
-                threads[index] = new Thread(() =>       // lambda function
+                threads[index] = new Task(() =>       // lambda function
                 {
                     results[index] = func(arg, index + 1);      // we pass the value to the thread and get the result
                 });
@@ -50,14 +52,14 @@ public class Demo
 
             for (int i = 0; i < STEPS; i++)
             {
-                // Join waits for a specific thread to finish,
+                // Wait waits for a specific task to finish,
                 // allowing the main thread to continue execution
-                // only after the specified thread completes.
-                threads[i].Join(); // This is not possible in the first for, otherwise we will wait for each thread
+                // only after the specified task completes.
+                threads[i].Wait();  // This is not possible in the first for, otherwise we will wait for each task
             }
 
-            fileManager.writeLineInFile(arg.ToString().PadRight(23) + 
-                                        results.Sum().ToString().PadRight(23) + 
+            fileManager.writeLineInFile(arg.ToString().PadRight(23) +
+                                        results.Sum().ToString().PadRight(23) +
                                         func(arg).ToString().PadRight(23), true);
 
             arg += 0.1; // next argument
